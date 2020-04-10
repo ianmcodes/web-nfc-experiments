@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <title>NFC Reader</title>
+    <meta name="viewport" content="width=device-width">
+    <script type="module">
+      let dsp;
+      const log = (...args) => {
+        console.log(...args);
+        if (!dsp) {
+          dsp = document.getElementById("console") || { innerText: "" };
+        }
+        dsp.innerText += args.join(" ") + "\n";
+      };
+
+      const init = () => {
+        log("Initalizing...");
+        if('NDEFReader' in window) {
+          log("Requesting reader...");
+          const reader = window.NDEFReader();
+          reader.scan()
+          .then(() => {
+            log("Scanning for tags...");
+            reader.onerror = () => {
+              log("Could not read tag. Try again.");
+            };
+            reader.onreading = evt => {
+              log("Got a tag!");
+            }
+          })
+          .catch((err) => {
+            log(`Scan faild to start: ${err}`);
+          });
+        } else {
+          log("Sorry. Your browser does not support NFC Reader API.");
+        }
+      };
+
+      window.addEventListener('DOMContentLoaded', init);
+    </script>
+    <style>
+      * { margin: 0; padding: 0; }
+      body {
+        display: flex;
+        flex-direction: column;
+        font-family: sans-serif;
+      }
+      body > div:first-child {
+        flex: 3;
+      }
+      body > div {
+        flex: 1;
+      }
+      #readBtn {
+        display: flex;
+        background-color: lightgreen;
+      }
+      #readBtn > span {
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <pre id="console"></pre>
+    </div>
+    <div id="readBtn">
+      <span>READ</span> 
+    </div>
+  </body>
+</html>
