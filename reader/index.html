@@ -17,7 +17,7 @@
         log("Initalizing...");
         if('NDEFReader' in window) {
           log("Requesting reader...");
-          const reader = window.NDEFReader();
+          const reader = new NDEFReader();
           reader.scan()
           .then(() => {
             log("Scanning for tags...");
