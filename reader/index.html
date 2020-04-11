@@ -20,7 +20,8 @@
           log(`RecordType: ${record.recordType}`);
           log(`MIME: ${record.mediaType}`);
           log(`ID: ${record.id}`);
-          log(`Data: ${record.data}`);
+          if (record.data)
+            log(`Data: ${String.fromCharCode.apply(null, new Uint8Array(record.data.buffer))}`);
         }
       };
 
