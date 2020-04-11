@@ -30,10 +30,12 @@
                 reader.onerror = () => {
                   btn.className = "error";
                   log("Could not read tag. Try again.");
+                  setTimeout(() => { btn.className = "reading"; }, 2000);
                 };
                 reader.onreading = evt => {
                   btn.className = "read";
                   log("Got a tag!");
+                  setTimeout(() => { btn.className = "reading"; }, 2000);
                 }
               })
               .catch((err) => {
@@ -75,25 +77,25 @@
       #readBtn.start {
         background-color: lightgray;
       }
-      #readBtn.start > span {
+      #readBtn.start > span::after {
         content: "Tap to Start Reading"
       }
       #readBtn.reading {
         background-color: yellow;
       }
-      #readBtn.reading > span {
-        content: "READING"
+      #readBtn.reading > span::after {
+        content: "SCANNING..."
       }
       #readBtn.read {
         background-color: lightgreen;
       }
-      #readBtn.read > span {
+      #readBtn.read > span::after {
         content: "GOT TAG!"
       }
       #readBtn.error {
         background-color: red;
       }
-      #readBtn.error > span {
+      #readBtn.error > span::after {
         content: "ERROR"
       }
     </style>
