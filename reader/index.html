@@ -13,6 +13,17 @@
         dsp.innerText += args.join(" ") + "\n";
       };
 
+      const dumpTag = (evt) => {
+        log(`SN: ${evt.serialNumber}`);
+        // loop through message records
+        for (let record of evt.message.records) {
+          log(`RecordType: ${record.recordType}`);
+          log(`MIME: ${record.mediaType}`);
+          log(`ID: ${record.id}`);
+          log(`Data: ${record.data}`);
+        }
+      };
+
       const init = () => {
         btn = document.getElementById("readBtn");
         log("Initalizing...");
@@ -35,6 +46,7 @@
                 reader.onreading = evt => {
                   btn.className = "read";
                   log("Got a tag!");
+                  dumpTag(evt);
                   setTimeout(() => { btn.className = "reading"; }, 2000);
                 }
               })
