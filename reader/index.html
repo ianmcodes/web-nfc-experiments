@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="origin-trial" content="Aq2vIiUlgusZdrDcYDTKdm7csVR/DWf7BWwUeiz5GkJIdyGGQO1xCv6IUNb1S/fpp5yUy+yCliGLtXf3xPefxQsAAABieyJvcmlnaW4iOiJodHRwczovL2lhbm1jY2FsbC5jb2Rlczo0NDMiLCJmZWF0dXJlIjoiV2ViTkZDIiwiZXhwaXJ5IjoxNTkwMTkwNTc2LCJpc1N1YmRvbWFpbiI6dHJ1ZX0=" />
     <script type="module">
-      let dsp;
+      let dsp, btn, scanning;
       const log = (...args) => {
         console.log(...args);
         if (!dsp) {
@@ -14,24 +14,36 @@
       };
 
       const init = () => {
+        btn = document.getElementById("readBtn");
         log("Initalizing...");
         if('NDEFReader' in window) {
-          log("Requesting reader...");
+          log("Tap Button to Start.")
           const reader = new NDEFReader();
-          reader.scan()
-          .then(() => {
-            log("Scanning for tags...");
-            reader.onerror = () => {
-              log("Could not read tag. Try again.");
-            };
-            reader.onreading = evt => {
-              log("Got a tag!");
+          btn.onclick = () => {
+            if (!scanning) {
+              scanning = true;
+              log("Requesting reader...");
+              reader.scan()
+              .then(() => {
+                log("Scanning for tags...");
+                btn.className = "reading";
+                reader.onerror = () => {
+                  btn.className = "error";
+                  log("Could not read tag. Try again.");
+                };
+                reader.onreading = evt => {
+                  btn.className = "read";
+                  log("Got a tag!");
+                }
+              })
+              .catch((err) => {
+                btn.className = "error";
+                log(`Scan faild to start: ${err}`);
+              });
             }
-          })
-          .catch((err) => {
-            log(`Scan faild to start: ${err}`);
-          });
+          }
         } else {
+          btn.className = "error";
           log("Sorry. Your browser does not support NFC Reader API.");
         }
       };
@@ -55,10 +67,34 @@
       }
       #readBtn {
         display: flex;
-        background-color: lightgreen;
+        /* background-color: lightgreen; */
       }
       #readBtn > span {
         margin: auto;
+      }
+      #readBtn.start {
+        background-color: lightgray;
+      }
+      #readBtn.start > span {
+        content: "Tap to Start Reading"
+      }
+      #readBtn.reading {
+        background-color: yellow;
+      }
+      #readBtn.reading > span {
+        content: "READING"
+      }
+      #readBtn.read {
+        background-color: lightgreen;
+      }
+      #readBtn.read > span {
+        content: "GOT TAG!"
+      }
+      #readBtn.error {
+        background-color: red;
+      }
+      #readBtn.error > span {
+        content: "ERROR"
       }
     </style>
   </head>
@@ -66,8 +102,8 @@
     <div>
       <pre id="console"></pre>
     </div>
-    <div id="readBtn">
-      <span>READ</span> 
+    <div id="readBtn" class="start">
+      <span></span> 
     </div>
   </body>
 </html>
