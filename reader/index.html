@@ -12,7 +12,8 @@
         }
         dsp.innerText += args.join(" ") + "\n";
       };
-
+      
+      let textDecoder = new TextDecoder();
       const dumpTag = (evt) => {
         log(`SN: ${evt.serialNumber}`);
         // loop through message records
@@ -21,7 +22,7 @@
           log(`MIME: ${record.mediaType}`);
           log(`ID: ${record.id}`);
           if (record.data)
-            log(`Data: ${String.fromCharCode.apply(null, new Uint8Array(record.data.buffer))}`);
+            log(`Data: ${textDecoder.decode(record.data.buffer)}`);
         }
       };
 
