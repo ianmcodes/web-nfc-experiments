@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NFC Reader</title>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="origin-trial" content="AlRccn6tgUWEn83RutqklaI3iCS9JHuVeqmhdvxdmk1ywdu9KG32im31BUyG0a3rnEEKU1jXbxWzDuHxgXfmygYAAABieyJvcmlnaW4iOiJodHRwczovL2lhbm1jY2FsbC5jb2Rlczo0NDMiLCJmZWF0dXJlIjoiV2ViTkZDIiwiZXhwaXJ5IjoxNTk1OTgwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0=" />
+    <script type="module">
+      let writer, recDsp;
+      let records = [];
+
+      let addRec = () => {
+        const recType = document.getElementById("recType").value;
+        let rec = {
+          recordType: null,
+          data: null
+        };
+        switch (recType) {
+          case "text":
+            rec.recordType = "text";
+            rec.data = document.getElementById("recText").value;
+            break;
+          case "url":
+            rec.recordType = "url";
+            rec.data = document.getElementById("recUrl").value;
+            break;
+          default:
+            return false;
+        }
+        let el = document.createElement("li");
+        el.innerHTML = `recordType: ${rec.recordType}; data: ${rec.data}`;
+        recDsp.appendChild(el);
+        records.push(rec);
+      }
+
+      let changeForm = () => {
+        const recType = document.getElementById("recType").value;
+        // hide all
+        document.querySelectorAll("#addRecFrm > div").forEach((el) => {
+          el.style.display = "none";
+        });
+        switch (recType) {
+          case "text":
+            document.getElementById("recTextFrm").style.display = "block";
+            break;
+          case "url":
+            document.getElementById("recUrlFrm").style.display = "block";
+            break;
+        }
+      }
+
+      let writeRecords = () => {
+        writer.write({
+          records: records
+        })
+        .then(() => {
+          console.log("Records written!");
+          recDsp.innerHTML = "";
+          records = [];
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("Could not write!");
+        })
+      }
+
+      let init = () => {
+        recDsp = document.getElementById("records");
+        document.getElementById("addRecBtn").addEventListener('click',addRec);
+        document.getElementById("writeBtn").addEventListener('click',writeRecords);
+        document.getElementById("recType").addEventListener('change',changeForm);
+        if('NDEFWriter' in window) {
+          writer = new NDEFWriter();
+        } else {
+          console.log("NDEFWriter not found");
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', init);
+    </script>
+    <style>
+      * { margin: 0; padding: 0; }
+      body {
+        display: flex;
+        flex-direction: column;
+        font-family: sans-serif;
+        height: 100vh;
+      }
+
+      .btn {
+        display: flex;
+        height: 5em;
+      }
+      .btn > span {
+        margin: auto;
+      }
+
+      #addRecBtn {
+        background-color: lightgray;
+      }
+
+      #writeBtn {
+        background-color: lightgreen;
+      }
+
+      .frm {
+        margin: 1em;
+      }
+
+      .frm > select {
+        width: 100%;
+      }
+
+      .frm input {
+        width: 100%;
+      }
+
+      ul#records {
+        margin: .5em;
+      }
+
+      ul#records > li:nth-child(even) {
+        background-color: lightblue;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="records"></ul>
+    <div>
+      <div class="frm">
+        <select id="recType">
+          <option value="text">Text</option>
+          <option value="url">URL</option>
+        </select>
+        <div id="addRecFrm">
+          <div id="recTextFrm">
+            Text: <input type="text" id="recText" />
+          </div>
+          <div id="recUrlFrm" style="display:none;">
+            Url: <input type="url" id="recUrl" />
+          </div>
+        </div>
+      </div>
+      <div id="addRecBtn" class="btn">
+        <span>Add Record</span>
+      </div>
+    </div>
+    <div id="writeBtn" class="btn">
+      <span>Write Record</span>
+    </div>
+  </body>
+</html>
